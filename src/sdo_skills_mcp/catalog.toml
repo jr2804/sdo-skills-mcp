@@ -1,0 +1,51 @@
+# Which layer each skill belongs to.
+#
+# A profile names the layers it puts in scope; the server only serves the
+# skills listed here, so a skill that is missing from this file is never
+# served even when it sits in a root. Keep the file in step with
+# https://github.com/jr2804/sdo-skills — a skill that is added there and
+# forgotten here fails the startup check of every profile that includes its
+# layer, which is the intended behaviour.
+
+[layers.common]
+skills = [
+  "sdo-writing",
+  "sdo-docx",
+  "sdo-drafting",
+  "sdo-ipr",
+  "sdo-project-setup",
+]
+
+[layers.etsi]
+skills = [
+  "etsi-governance",
+  "etsi-directives",
+  "etsi-procedures",
+  "etsi-tools",
+]
+
+[layers."3gpp"]
+skills = [
+  "3gpp-basics",
+  "3gpp-working-groups",
+  "3gpp-meetings",
+  "3gpp-releases",
+  "3gpp-specifications",
+  "3gpp-tdocs",
+  "3gpp-change-request",
+  "3gpp-portal-authentication",
+]
+
+[layers.itut]
+skills = [
+  "itut-reference",
+  "itut-contributions",
+]
+
+# Skills that live outside the skills repository (the ETSI portal tooling).
+# They need their own root: --root path/to/etsi-portal-tool
+[layers.tools]
+skills = [
+  "etsi-portal-tool",
+  "etsi-meeting-report",
+]

@@ -1,0 +1,6 @@
+# 3GPP writer profile.
+
+id = "3gpp"
+title = "3GPP Writer"
+description = "Drafts 3GPP contributions (TDocs), change requests, meeting agendas and reports for TSG, WG and subgroup meetings."
+include = ["common", "3gpp"]

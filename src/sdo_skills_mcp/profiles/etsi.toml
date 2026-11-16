@@ -1,0 +1,9 @@
+# ETSI writer profile.
+#
+# Layers in scope, in the order they are served. The `tools` layer is the
+# ETSI portal tooling, so it belongs to this profile and to no other.
+
+id = "etsi"
+title = "ETSI Writer"
+description = "Drafts ETSI contributions, meeting documents, work item descriptions and deliverables (TS, ES, EN, TR, EG, GS, SR)."
+include = ["common", "etsi", "tools"]

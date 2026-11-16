@@ -1,0 +1,6 @@
+# ITU-T writer profile.
+
+id = "itut"
+title = "ITU-T Writer"
+description = "Drafts ITU-T contributions, TDocs, liaison statements and Recommendations for study groups, working parties and rapporteurs."
+include = ["common", "itut"]
