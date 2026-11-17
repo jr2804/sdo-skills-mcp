@@ -43,6 +43,42 @@ def test_missing_root_is_an_error(tmp_path: Path) -> None:
         discover_skills([tmp_path / "nowhere"])
 
 
+def test_discovery_walks_a_layered_tree(tmp_path: Path) -> None:
+    tree = tmp_path / "layered"
+    for layer, name, text in (
+        ("common", "sdo-common", "Layered common."),
+        ("etsi", "etsi-only", "Layered etsi."),
+    ):
+        (tree / layer / name).mkdir(parents=True)
+        (tree / layer / name / "SKILL.md").write_text(
+            f"---\nname: {name}\ndescription: {text}\n---\n\nBody.\n", encoding="utf-8", newline="\n"
+        )
+    (tree / "notes").mkdir()
+
+    skills = discover_skills([tree])
+
+    assert sorted(skills) == ["etsi-only", "sdo-common"]
+    assert skills["sdo-common"].description == "Layered common."
+    assert skills["etsi-only"].description == "Layered etsi."
+
+
+def test_shallowest_skill_wins_inside_a_root(tmp_path: Path) -> None:
+    tree = tmp_path / "skills"
+    (tree / "sdo-common").mkdir(parents=True)
+    (tree / "sdo-common" / "SKILL.md").write_text(
+        "---\nname: sdo-common\ndescription: Top level.\n---\n\nBody.\n", encoding="utf-8", newline="\n"
+    )
+    nested = tree / "tools" / "sdo-common"
+    nested.mkdir(parents=True)
+    (nested / "SKILL.md").write_text(
+        "---\nname: sdo-common\ndescription: Nested.\n---\n\nBody.\n", encoding="utf-8", newline="\n"
+    )
+
+    skills = discover_skills([tree])
+
+    assert skills["sdo-common"].description == "Top level."
+
+
 def test_invalid_skill_names_the_folder(tmp_path: Path) -> None:
     root = tmp_path / "skills"
     (root / "broken").mkdir(parents=True)

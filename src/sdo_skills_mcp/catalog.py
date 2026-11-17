@@ -59,21 +59,22 @@ def load_layers(catalog_file: Path = CATALOG_FILE) -> dict[str, tuple[str, ...]]
 def discover_skills(roots: Iterable[Path]) -> dict[str, Skill]:
     """Load every skill under the roots, keyed by name.
 
-    A skill is a directory with a ``SKILL.md``. Roots are read in order and the
-    first root that defines a name wins, so a local override can shadow a
-    shared checkout.
+    A skill is a directory with a ``SKILL.md``. Discovery is recursive, so a
+    root may be a layered tree such as ``skills/<layer>/<skill-id>/``. Roots
+    are read in order and the first root that defines a name wins, so a local
+    override can shadow a shared checkout; inside one root the shallowest
+    path wins.
     """
     skills: dict[str, Skill] = {}
     for root in roots:
         if not root.is_dir():
             raise CatalogError(f"skills root does not exist: {root}")
-        for child in sorted(root.iterdir()):
-            if not (child / SKILL_FILE).is_file():
-                continue
+        found = sorted(root.rglob(SKILL_FILE), key=lambda path: path.parts)
+        for skill_file in found:
             try:
-                skill = Skill.from_directory(child)
+                skill = Skill.from_directory(skill_file.parent)
             except Exception as exc:  # FastMCP validates the Agent Skills spec
-                raise CatalogError(f"{child}: {exc}") from exc
+                raise CatalogError(f"{skill_file.parent}: {exc}") from exc
             skills.setdefault(skill.name, skill)
     return skills
 
