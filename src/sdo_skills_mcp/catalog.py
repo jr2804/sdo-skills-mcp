@@ -16,10 +16,6 @@ CATALOG_FILE = PACKAGE_DIR / "catalog.toml"
 PROFILES_DIR = PACKAGE_DIR / "profiles"
 
 
-class CatalogError(Exception):
-    """A root, a profile or a layer does not add up."""
-
-
 @dataclass(frozen=True)
 class Profile:
     """One SDO writer profile: the layers it serves, in order."""
@@ -30,9 +26,21 @@ class Profile:
     include: tuple[str, ...]
 
 
-def available_profiles(profiles_dir: Path = PROFILES_DIR) -> list[str]:
-    """Return the profile IDs, sorted."""
-    return sorted(path.stem for path in profiles_dir.glob("*.toml"))
+class CatalogError(Exception):
+    """A root, a profile or a layer does not add up."""
+
+
+def resolve(
+    profile_id: str,
+    roots: Sequence[Path],
+    *,
+    profiles_dir: Path = PROFILES_DIR,
+    catalog_file: Path = CATALOG_FILE,
+) -> tuple[Profile, list[Skill]]:
+    """Load a profile and the skills it serves."""
+    profile = load_profile(profile_id, profiles_dir)
+    skills = select_skills(discover_skills(roots), load_layers(catalog_file), profile)
+    return profile, skills
 
 
 def load_profile(profile_id: str, profiles_dir: Path = PROFILES_DIR) -> Profile:
@@ -48,6 +56,11 @@ def load_profile(profile_id: str, profiles_dir: Path = PROFILES_DIR) -> Profile:
         description=data["description"],
         include=tuple(data["include"]),
     )
+
+
+def available_profiles(profiles_dir: Path = PROFILES_DIR) -> list[str]:
+    """Return the profile IDs, sorted."""
+    return sorted(path.stem for path in profiles_dir.glob("*.toml"))
 
 
 def load_layers(catalog_file: Path = CATALOG_FILE) -> dict[str, tuple[str, ...]]:
@@ -97,16 +110,3 @@ def select_skills(
         raise CatalogError(f"profile {profile.id!r} needs skills that no root provides: {', '.join(missing)}")
 
     return [skills[name] for name in wanted]
-
-
-def resolve(
-    profile_id: str,
-    roots: Sequence[Path],
-    *,
-    profiles_dir: Path = PROFILES_DIR,
-    catalog_file: Path = CATALOG_FILE,
-) -> tuple[Profile, list[Skill]]:
-    """Load a profile and the skills it serves."""
-    profile = load_profile(profile_id, profiles_dir)
-    skills = select_skills(discover_skills(roots), load_layers(catalog_file), profile)
-    return profile, skills

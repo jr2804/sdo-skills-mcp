@@ -17,17 +17,22 @@ description: {description}
 Body of {name}.
 """
 
+_test_dir = Path(__file__).parent
 
-def write_skill(root: Path, name: str, description: str = "A test skill.", *, extra: dict[str, str] | None = None) -> Path:
-    """Write one skill directory and return it."""
-    skill_dir = root / name
-    skill_dir.mkdir(parents=True, exist_ok=True)
-    (skill_dir / "SKILL.md").write_text(SKILL_TEXT.format(name=name, description=description), encoding="utf-8", newline="\n")
-    for relative, text in (extra or {}).items():
-        target = skill_dir / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text, encoding="utf-8", newline="\n")
-    return skill_dir
+
+@pytest.fixture(scope="session")
+def data_dir() -> Path:
+    """Return the path to the test data directory."""
+    return _test_dir / "data"
+
+
+@pytest.fixture(scope="session")
+def cache_subdir(request: pytest.FixtureRequest, subdir: str) -> Path:
+    """Return a subdirectory in the pytest cache directory.
+
+    Can be used by other fixtures to easily get a cache directory.
+    """
+    return Path(request.config.cache.mkdir(subdir))
 
 
 @pytest.fixture
@@ -43,14 +48,24 @@ def skills_root(tmp_path: Path) -> Path:
     return root
 
 
+def write_skill(root: Path, name: str, description: str = "A test skill.", *, extra: dict[str, str] | None = None) -> Path:
+    """Write one skill directory and return it."""
+    skill_dir = root / name
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(SKILL_TEXT.format(name=name, description=description), encoding="utf-8", newline="\n")
+    for relative, text in (extra or {}).items():
+        target = skill_dir / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8", newline="\n")
+    return skill_dir
+
+
 @pytest.fixture
 def catalog_file(tmp_path: Path) -> Path:
     """A layer map over the fixture skills."""
     path = tmp_path / "catalog.toml"
     path.write_text(
-        '[layers.common]\nskills = ["sdo-common"]\n\n'
-        '[layers.etsi]\nskills = ["etsi-only"]\n\n'
-        '[layers.itut]\nskills = ["itut-only"]\n',
+        '[layers.common]\nskills = ["sdo-common"]\n\n[layers.etsi]\nskills = ["etsi-only"]\n\n[layers.itut]\nskills = ["itut-only"]\n',
         encoding="utf-8",
     )
     return path

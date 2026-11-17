@@ -1,0 +1,24 @@
+# Changes here will be overwritten by Copier
+_commit: 2026.11.3
+_src_path: https://codeberg.org/jr2804/copier-uv-plus.git
+project_title: SDO Skills MCP
+project_slug: sdo-skills-mcp
+package_slug: sdo_skills_mcp
+author: Jan.Reimes
+author_email: jan.reimes@head-acoustics.com
+description: Serve the SDO writing skills (ETSI, 3GPP, ITU-T) over the Model Context Protocol.
+repo_url: https://github.com/jr2804/sdo-skills-mcp
+license: MIT
+python_version: 3.14
+layout: src
+enable_cli: True
+enable_docs: True
+include_github_actions: True
+release_versioning: calendar
+auto_setup_mise: False
+auto_sync_uv: skip
+include_format_tasks: True
+include_lint_tasks: True
+include_quality_tasks: True
+include_mcp_tasks: False
+feature_groups: slop,codebase,dev,tracking,docs,general,rust,coding

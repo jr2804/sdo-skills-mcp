@@ -1,9 +1,84 @@
-.venv/
-.coverage
-.pytest_cache/
+# Python-generated files
 __pycache__/
-*.py[cod]
-dist/
+*.py[oc]
 build/
-*.egg-info/
+dist/
+wheels/
+*.egg-info
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
 .ruff_cache/
+
+# Documentation build output (zensical / mkdocs)
+site/
+
+# Rust build artifacts (maturin/other native builds)
+target/
+
+# Native extension binaries
+*.so
+*.dll
+*.pyd
+*.dylib
+
+# Windows artifacts
+*.exe
+*.pdb
+nul
+
+# Logs
+*.log
+
+# Virtual environments
+.venv
+*.env
+
+# Dev tools/MCP server data/dirs
+/.config/chunkhound/db
+.sisyphus
+.config/memorygraph/memory.db
+/.opencode
+
+# temp folders
+/.tmp
+/tmp
+/temp
+
+# Skills lock file
+skills-lock.json
+
+# Local tool / MCP / coding assistant directories
+.repowise/
+.grepai/
+.mcp.json
+opencode.json
+opencode.jsonc
+mcporter.json
+
+.pi/
+.codex/
+.claude/
+.vscode/
+.opencode/
+
+# .agents/ DOX files — track .md and the state subtrees, ignore everything
+# else tools may drop
+/.agents/*
+!/.agents/*.md
+!/.agents/history/
+!/.agents/history/**
+!/.agents/files/
+!/.agents/files/**
+!/.agents/policies/
+!/.agents/policies/**
+!/.agents/tools/
+!/.agents/tools/**
+!/.agents/maintenance/
+!/.agents/maintenance/**
+# Implementation plans — mutable working artifacts, never committed
+/.agents/plans/
+
+# custom/local/misc. files
+mise.local.toml

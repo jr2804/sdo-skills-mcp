@@ -1,8 +1,16 @@
-# sdo-skills-mcp
+# SDO Skills MCP
 
 The standards-writing skills of the SDO Writer — ETSI, 3GPP, ITU-T — served over the
 [Model Context Protocol](https://modelcontextprotocol.io), so an MCP host can read them
 without copying them into every project.
+
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+  <a href="#"><img alt="Python 3.14+" src="https://img.shields.io/badge/python-3.14%2B-3776ab?logo=python"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg"></a>
+  <a href="https://github.com/jr2804/sdo-skills-mcp/actions"><img alt="CI" src="https://github.com/jr2804/sdo-skills-mcp/actions/workflows/ci.yml/badge.svg"></a>
+</p>
+<!-- markdownlint-enable MD033 -->
 
 The server exposes the skills through the MCP Skills extension (`skills/list`, `skills/get`,
 `skill://<name>/SKILL.md` resources) and, for hosts that do not speak that extension yet,
@@ -11,6 +19,17 @@ through two plain tools: `sdo_list_skills` and `sdo_read_skill`.
 Skill content is not in this repository. It lives in
 [jr2804/sdo-skills](https://github.com/jr2804/sdo-skills); this package decides *which*
 skills a profile serves and *how* they reach a host.
+
+---
+
+## Quick Start
+
+```bash
+# Clone and set up
+git clone https://github.com/jr2804/sdo-skills-mcp.git
+cd sdo-skills-mcp
+mise dev
+```
 
 ## Run it
 
@@ -73,21 +92,95 @@ tools carry the same content, one file at a time.
 frontmatter, on a folder without `SKILL.md`, and reports skills that `catalog.toml` names
 but no root provides.
 
+Shell completion (after the command is on your `PATH`):
+
+```bash
+sdo-skills-mcp --install-completion
+```
+
 ## Development
 
 ```bash
-uv sync
-uv run pytest          # 100 % coverage gate
-uv run sdo-skills-mcp profiles
+mise dev        # uv sync -U --dev --all-extras --all-groups
+mise test       # uv run pytest --cov=sdo_skills_mcp   (100 % coverage gate)
+mise lint       # ruff + ty + codespell
+mise format     # ruff format + pyreorder
+mise all        # test + lint + spell + format + format-md + docs
 ```
 
-## Layout
+A focused run needs `--no-cov` — the coverage gate fails below 100 % on a partial suite:
 
+```bash
+uv run pytest --no-cov tests/test_catalog.py
 ```
-src/sdo_skills_mcp/
-  catalog.toml        # layer -> skill names
-  profiles/*.toml     # profile -> layers
-  catalog.py          # load, discover, select
-  server.py           # FastMCP server, extension + compat tools
-  cli.py              # serve, profiles, catalog, check
+
+Pre-commit hooks:
+
+```bash
+pre-commit install
+pre-commit run --all-files
 ```
+
+Documentation (Zensical):
+
+```bash
+mise docs-serve          # live preview at http://localhost:8000
+mise docs-build          # build static site to site/
+```
+
+## Project Structure
+
+```text
+sdo-skills-mcp/
+├── .config/mise/               # mise task definitions
+├── .github/workflows/          # CI + release workflows
+├── .agents/                    # DOX state files (onboarding, policies, history)
+├── docs/                       # Zensical documentation
+├── src/sdo_skills_mcp/
+│   ├── __about__.py            # version metadata
+│   ├── catalog.toml            # layer -> skill names
+│   ├── profiles/*.toml         # profile -> layers
+│   ├── catalog.py              # load, discover, select
+│   ├── server.py               # FastMCP server, extension + compat tools
+│   └── cli/                    # Cyclopts CLI (app, args, commands)
+├── tests/                      # Test suite
+├── .copier-answers.yml         # Template version tracking
+├── pyproject.toml              # uv + hatch + pytest config
+├── ruff.toml                   # Linter + formatter config
+├── ty.toml                     # Type checker config
+└── README.md
+```
+
+## Tech Stack
+
+| Layer | Tool | Purpose |
+|-------|------|---------|
+| Package manager | [uv](https://docs.astral.sh/uv/) | Fast installs, deterministic lockfile |
+| Task runner | [mise](https://mise.jdx.dev/) | DAG-based tasks, tool version management |
+| Linter + formatter | [ruff](https://docs.astral.sh/ruff/) | Single-binary code quality |
+| Type checker | [ty](https://github.com/google/ty) | Strict type checking |
+| Testing | [pytest](https://pytest.org/) | Test framework with 100% coverage gate |
+| CLI | [Cyclopts](https://cyclopts.readthedocs.io/) | Type-driven CLI parsing and shell completion |
+| Server | [FastMCP](https://gofastmcp.com/) | MCP server with the skills extension |
+| Spell check | [codespell](https://github.com/codespell-project/codespell) | Code and doc spell checking |
+| Documentation | [Zensical](https://github.com/zensical/zensical) | MkDocs Material with executable examples |
+| Versioning | [uv-dynamic-versioning](https://github.com/ninoseki/uv-dynamic-versioning) | Git tag-based calendar versioning |
+| Hooks | [pre-commit](https://pre-commit.com/) | Automated quality gate |
+| CI/CD | GitHub Actions | Test matrix + calendar-version release |
+
+## CI/CD
+
+GitHub Actions runs on every push and PR:
+
+| Workflow | Triggers | Jobs |
+|----------|----------|------|
+| **CI** (`ci.yml`) | push, PR to main | quality (ruff, ty, codespell) + test matrix (3.14, 3.15-dev on Linux/macOS/Windows) + docs build |
+| **Release** (`release.yml`) | push to main | computes the next calendar version (`YYYY.MM.N`), tags the commit, builds the package, publishes a GitHub release with the artifacts |
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+Generated from [copier-uv-plus](https://codeberg.org/jr2804/copier-uv-plus).

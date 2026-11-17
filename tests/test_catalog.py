@@ -29,9 +29,7 @@ def test_first_root_wins(tmp_path: Path, skills_root: Path) -> None:
     override = tmp_path / "override"
     override.mkdir()
     (override / "sdo-common").mkdir()
-    (override / "sdo-common" / "SKILL.md").write_text(
-        "---\nname: sdo-common\ndescription: Override.\n---\n\nWinning body.\n", encoding="utf-8", newline="\n"
-    )
+    (override / "sdo-common" / "SKILL.md").write_text("---\nname: sdo-common\ndescription: Override.\n---\n\nWinning body.\n", encoding="utf-8", newline="\n")
 
     skills = discover_skills([override, skills_root])
 
@@ -50,9 +48,7 @@ def test_discovery_walks_a_layered_tree(tmp_path: Path) -> None:
         ("etsi", "etsi-only", "Layered etsi."),
     ):
         (tree / layer / name).mkdir(parents=True)
-        (tree / layer / name / "SKILL.md").write_text(
-            f"---\nname: {name}\ndescription: {text}\n---\n\nBody.\n", encoding="utf-8", newline="\n"
-        )
+        (tree / layer / name / "SKILL.md").write_text(f"---\nname: {name}\ndescription: {text}\n---\n\nBody.\n", encoding="utf-8", newline="\n")
     (tree / "notes").mkdir()
 
     skills = discover_skills([tree])
@@ -65,14 +61,10 @@ def test_discovery_walks_a_layered_tree(tmp_path: Path) -> None:
 def test_shallowest_skill_wins_inside_a_root(tmp_path: Path) -> None:
     tree = tmp_path / "skills"
     (tree / "sdo-common").mkdir(parents=True)
-    (tree / "sdo-common" / "SKILL.md").write_text(
-        "---\nname: sdo-common\ndescription: Top level.\n---\n\nBody.\n", encoding="utf-8", newline="\n"
-    )
+    (tree / "sdo-common" / "SKILL.md").write_text("---\nname: sdo-common\ndescription: Top level.\n---\n\nBody.\n", encoding="utf-8", newline="\n")
     nested = tree / "tools" / "sdo-common"
     nested.mkdir(parents=True)
-    (nested / "SKILL.md").write_text(
-        "---\nname: sdo-common\ndescription: Nested.\n---\n\nBody.\n", encoding="utf-8", newline="\n"
-    )
+    (nested / "SKILL.md").write_text("---\nname: sdo-common\ndescription: Nested.\n---\n\nBody.\n", encoding="utf-8", newline="\n")
 
     skills = discover_skills([tree])
 
@@ -118,9 +110,7 @@ def test_select_skills_keeps_layer_order(skills_root: Path, catalog_file: Path, 
 
 
 def test_select_skills_rejects_unknown_layer(skills_root: Path, catalog_file: Path, profiles_dir: Path) -> None:
-    (profiles_dir / "bad.toml").write_text(
-        'id = "bad"\ntitle = "Bad"\ndescription = "Bad."\ninclude = ["common", "nope"]\n', encoding="utf-8"
-    )
+    (profiles_dir / "bad.toml").write_text('id = "bad"\ntitle = "Bad"\ndescription = "Bad."\ninclude = ["common", "nope"]\n', encoding="utf-8")
     profile = load_profile("bad", profiles_dir)
 
     with pytest.raises(CatalogError, match="names unknown layer 'nope' — known: common, etsi, itut"):
@@ -128,9 +118,7 @@ def test_select_skills_rejects_unknown_layer(skills_root: Path, catalog_file: Pa
 
 
 def test_select_skills_reports_missing_skills(skills_root: Path, catalog_file: Path, profiles_dir: Path) -> None:
-    (catalog_file).write_text(
-        '[layers.common]\nskills = ["sdo-common", "gone"]\n\n[layers.etsi]\nskills = ["etsi-only"]\n', encoding="utf-8"
-    )
+    (catalog_file).write_text('[layers.common]\nskills = ["sdo-common", "gone"]\n\n[layers.etsi]\nskills = ["etsi-only"]\n', encoding="utf-8")
     profile = load_profile("etsi", profiles_dir)
 
     with pytest.raises(CatalogError, match="needs skills that no root provides: gone"):

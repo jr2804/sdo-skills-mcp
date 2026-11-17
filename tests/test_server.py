@@ -13,17 +13,6 @@ from sdo_skills_mcp.catalog import Profile, discover_skills, load_layers, load_p
 from sdo_skills_mcp.server import _as_text, build_server
 
 
-@pytest.fixture
-def profile(profiles_dir: Path) -> Profile:
-    return load_profile("etsi", profiles_dir)
-
-
-@pytest.fixture
-def server(skills_root: Path, catalog_file: Path, profile: Profile) -> FastMCP:
-    skills = select_skills(discover_skills([skills_root]), load_layers(catalog_file), profile)
-    return build_server(profile, skills)
-
-
 def test_server_names_the_profile(profile: Profile) -> None:
     server = build_server(profile, [])
 
@@ -83,6 +72,17 @@ async def test_read_tool_rejects_an_unknown_path(server: FastMCP) -> None:
     async with Client(server) as client:
         with pytest.raises(ToolError, match="has no file 'nope.md'"):
             await client.call_tool("sdo_read_skill", {"name": "etsi-only", "path": "nope.md"})
+
+
+@pytest.fixture
+def server(skills_root: Path, catalog_file: Path, profile: Profile) -> FastMCP:
+    skills = select_skills(discover_skills([skills_root]), load_layers(catalog_file), profile)
+    return build_server(profile, skills)
+
+
+@pytest.fixture
+def profile(profiles_dir: Path) -> Profile:
+    return load_profile("etsi", profiles_dir)
 
 
 def test_as_text_decodes_bytes() -> None:

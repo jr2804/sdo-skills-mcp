@@ -22,10 +22,6 @@ Hosts that cannot read resources use the `sdo_list_skills` and `sdo_read_skill` 
 """
 
 
-def _as_text(value: str | bytes) -> str:
-    return value.decode("utf-8") if isinstance(value, bytes) else value
-
-
 def build_server(profile: Profile, skills: Sequence[Skill]) -> FastMCP:
     """Build the server for one profile."""
     by_name = {skill.name: skill for skill in skills}
@@ -64,3 +60,7 @@ def build_server(profile: Profile, skills: Sequence[Skill]) -> FastMCP:
         return _as_text(content)
 
     return mcp
+
+
+def _as_text(value: str | bytes) -> str:
+    return value.decode("utf-8") if isinstance(value, bytes) else value
