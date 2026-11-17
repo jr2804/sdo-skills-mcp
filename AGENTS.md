@@ -23,7 +23,9 @@ what a profile contains and how it is delivered.
 ## Local contracts
 
 1. **Profiles are data.** A new profile is a TOML file, not a branch in `cli.py`.
-2. **First root wins.** Layering is by name with the first root taking precedence;
+2. **First root wins, discovery is recursive.** Layering is by name with the first root
+   taking precedence and the shallowest path winning inside a root, so both a flat
+   checkout and a layered tree (`skills/<layer>/<skill-id>/`) work;
    `discover_skills` must keep that order stable.
 3. **Two delivery paths, one content.** Every skill reachable through the extension is
    also reachable through `sdo_read_skill`; the compat tools are not a reduced mode.
@@ -41,11 +43,15 @@ what a profile contains and how it is delivered.
 - `Skill.from_files` keys are relative to the skill root (`SKILL.md`, not `name/SKILL.md`).
 - On the client side `Skill.files` values are bytes; the server side uses `_as_text`.
 - Windows: write test fixtures with `newline="\n"` or CRLF breaks exact-output asserts.
+- `uvx --from <local checkout>` caches the built environment per version: after editing
+  the package without bumping the version, `uv cache clean sdo-skills-mcp` (or
+  `UV_NO_CACHE=1`) or the run serves the stale build. Git-based installs are rev-keyed
+  and never hit this.
 
 ## Verification
 
 ```bash
-uv run pytest                                   # 35 tests, 100 % coverage
+uv run pytest                                   # 37 tests, 100 % coverage
 uv run sdo-skills-mcp profiles
 uv run sdo-skills-mcp check --root <skills> --root <tools>
 ```
