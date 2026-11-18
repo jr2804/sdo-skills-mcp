@@ -124,9 +124,11 @@ _Always-injected_ — keep minimal. Everything else → `.agents/` files.
     commit message makes `.github/workflows/release.yml` skip the tag and the GitHub
     release; use it for a commit that must not cut a version.
 12. **Keep CI actions on Node 24 majors.** `jdx/mise-action@v5`, `actions/checkout@v7`,
-    `actions/setup-python@v7`, `astral-sh/setup-uv@v10`, `actions/configure-pages@v6`,
+    `actions/setup-python@v7`, `actions/configure-pages@v6`,
     `actions/upload-pages-artifact@v5` — the template still pins the Node 20 era, so
     `copier update` will conflict on the workflow files and the local pins win.
+    `astral-sh/setup-uv` stays at `@v7`: it has no `v8`+ major tag, and `v7` already
+    runs on Node 24.
 
 ## Child DOX Index
 
