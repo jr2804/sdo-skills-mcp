@@ -175,6 +175,7 @@ GitHub Actions runs on every push and PR:
 | Workflow | Triggers | Jobs |
 |----------|----------|------|
 | **CI** (`ci.yml`) | push, PR to main | quality (ruff, ty, codespell) + test matrix (3.14, 3.15-dev on Linux/macOS/Windows) + docs build |
+| **Docs** (`docs.yml`) | push to main (docs, README, `zensical.toml`) | builds the Zensical site and deploys it to <https://jr2804.github.io/sdo-skills-mcp/> |
 | **Release** (`release.yml`) | push to main | computes the next calendar version (`YYYY.MM.N`), tags the commit, builds the package, publishes a GitHub release with the artifacts |
 
 Put `[skip release]` in the last commit message to suppress the release path: no tag is

@@ -123,6 +123,10 @@ _Always-injected_ — keep minimal. Everything else → `.agents/` files.
 11. **A commit message can veto the release.** `[skip release]` anywhere in the last
     commit message makes `.github/workflows/release.yml` skip the tag and the GitHub
     release; use it for a commit that must not cut a version.
+12. **Keep CI actions on Node 24 majors.** `jdx/mise-action@v5`, `actions/checkout@v7`,
+    `actions/setup-python@v7`, `astral-sh/setup-uv@v10`, `actions/configure-pages@v6`,
+    `actions/upload-pages-artifact@v5` — the template still pins the Node 20 era, so
+    `copier update` will conflict on the workflow files and the local pins win.
 
 ## Child DOX Index
 
