@@ -18,9 +18,41 @@ defaults:
 
 jobs:
 
+  # A commit message containing "[skip release]" suppresses the whole release
+  # path: no tag is cut and no GitHub release is published.
+  check:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+
+    - name: Inspect the last commit message
+      id: check
+      run: |
+        set -euo pipefail
+
+        message="$(git log -1 --pretty=%B)"
+        if printf '%s' "$message" | grep -qF '[skip release]'; then
+          echo "should_release=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Found [skip release] in the last commit message - skipping the release."
+        else
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+        fi
+
   release:
 
-    if: ${{ github.ref == 'refs/heads/main' }}
+    needs:
+    - check
+
+    if: ${{ needs.check.outputs.should_release == 'true' && github.ref == 'refs/heads/main' }}
 
     runs-on: ubuntu-latest
     permissions:

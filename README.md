@@ -177,6 +177,9 @@ GitHub Actions runs on every push and PR:
 | **CI** (`ci.yml`) | push, PR to main | quality (ruff, ty, codespell) + test matrix (3.14, 3.15-dev on Linux/macOS/Windows) + docs build |
 | **Release** (`release.yml`) | push to main | computes the next calendar version (`YYYY.MM.N`), tags the commit, builds the package, publishes a GitHub release with the artifacts |
 
+Put `[skip release]` in the last commit message to suppress the release path: no tag is
+cut and no GitHub release is published.
+
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.

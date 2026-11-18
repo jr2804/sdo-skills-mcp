@@ -120,6 +120,9 @@ _Always-injected_ — keep minimal. Everything else → `.agents/` files.
 10. **`uvx` caches per version.** After editing the package without a version bump,
     `uv cache clean sdo-skills-mcp` (or `UV_NO_CACHE=1`) — otherwise the run serves
     the stale build.
+11. **A commit message can veto the release.** `[skip release]` anywhere in the last
+    commit message makes `.github/workflows/release.yml` skip the tag and the GitHub
+    release; use it for a commit that must not cut a version.
 
 ## Child DOX Index
 
